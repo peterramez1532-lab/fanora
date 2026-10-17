@@ -641,9 +641,15 @@ def index():
 
     communities = connection.execute(
         """
-        SELECT c.*,i.name ip_name,
-        (SELECT COUNT(*) FROM community_members m WHERE m.community_id=c.id) members
-        FROM communities c ORDER BY c.id DESC LIMIT 3
+        SELECT c.*,
+            i.name AS ip_name,
+            (SELECT COUNT(*)
+                FROM community_members m
+                WHERE m.community_id = c.id) AS members
+        FROM communities c
+        LEFT JOIN ips i ON i.id = c.ip_id
+        ORDER BY c.id DESC
+        LIMIT 3
         """
     ).fetchall()
 
